@@ -1,90 +1,71 @@
-@model IEnumerable<ExpenseMVC.Models.Expense>
+@model IEnumerable<ExpenseMVC.ViewModels.ExpenseVM.ExpenseIndexViewModel>
+@* @model IEnumerable<ExpenseMVC.Models.Expense> *@
 
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Index</h1>
-
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.ExpenseDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Description)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Amount)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CurrencyUsed)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ReceiptUrl)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Notes)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ExpenseType)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ExpenseOwner)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CreatedAt)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.UpdatedAt)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.ExpenseDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Amount)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CurrencyUsed)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ReceiptUrl)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Notes)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ExpenseType)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ExpenseOwner.Id)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CreatedAt)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.UpdatedAt)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
+@if(TempData["Message"] is not null)
+{
+    if(TempData["Message"].ToString().Contains("Success", StringComparison.InvariantCultureIgnoreCase))
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <strong>@TempData["Message"]</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    } else {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <strong>@TempData["Message"]</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
 }
-    </tbody>
-</table>
+<br/>
+<div class="row flex-column d-flex">
+    <section id="actions" class="mb-3 d-flex p-2 justify-content-between align-items-center">
+        <div><span class="display-5">My Expenses</span></div>
+        <div></div>
+        <div>
+            <a asp-action="Create" class="rounded-circle p-0 btn btn-dark justify-content-center align-items-center d-flex" style="width: 40px; height: 40px;">
+                <i class="bi bi-plus-lg fw-700 fs-3" ></i>
+            </a>
+        </div>
+    </section>
+    
+    <section id="mainArea">
+        @foreach(var expense in Model) 
+        {
+            <div class="card bg-light p-2 mb-3 col-sm-10 col-md-4 col-lg-3 rounded-1 shadow">
+                <span class="d-flex justify-content-between align-items-center mb-1">
+                    <span class="badge rounded-pill bg-info badge-primary">@expense.ExpenseDate.ToString("d")</span>
+                    <span data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="bi bi-three-dots-vertical"></i>
+                    </span>
+                    <div class="dropdown-menu bg-light" aria-labelledby="btnGroupDrop2">
+                        <a
+                            class="dropdown-item d-flex justify-content-between align-items-center"
+                            asp-action="Delete"
+                            asp-route-id="@expense.Id"
+                        >
+                            <span class="fw-900 float-left">
+                                Delete
+                            </span>
+                            <span class="float-right">
+                                <i class="bi bi-trash3 text-danger fs-2"></i>
+                            </span>
+                        </a>
+                    </div>
+                </span>
+                <hr>
+                <a asp-action="edit" asp-controller="expense" asp-route-id="@expense.Id" class="text-decoration-none">
+                    <div class="text-body">@expense.ExpenseDescription</div>
+                </a>
+            </div>
+        }
+    </section>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -4,7 +4,13 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - ExpenseMVC</title>
-    <link rel="stylesheet" href="~/css/bootstrap-quartz.min.css" />
+    @if(ViewBag.themeName is not null)
+    {
+        <link rel="stylesheet" href="~/css/@ViewBag.themeName" />
+    } else {
+        <link rel="stylesheet" href="~/css/bootstrap.minty.min.css" />
+    }
+    <link rel="stylesheet" href="~/lib/bootstrap-icons/font/bootstrap-icons.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/ExpenseMVC.styles.css" asp-append-version="true" />
 </head>

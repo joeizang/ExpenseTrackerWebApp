@@ -1,30 +1,56 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ExpenseMVC.Data;
 using ExpenseMVC.Models;
 using ExpenseMVC.ViewModels.ExpenseVM;
+using FluentValidation;
+using System.Diagnostics;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
+using ExpenseMVC.BusinessLogicServices.ExpenseServiceLogic;
 
 namespace ExpenseMVC.Controllers
 {
+    [Authorize]
     public class ExpenseController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IValidator<CreateExpenseViewModel> _createValidator;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IExpenseDataService _expenseDataService;
 
-        public ExpenseController(ApplicationDbContext context)
+        public Dictionary<string, string> Themes { get; set; } = new () {
+            { "minty", "bootstrap-icons.min.css"},
+            { "materia", "bootstrap.materia.min.css" },
+            { "quartz", "bootstrap-quartz.min.css" }
+        };
+
+        public ExpenseController(ApplicationDbContext context, 
+            IValidator<CreateExpenseViewModel> createValidator,
+            UserManager<ApplicationUser> userManager,
+            IExpenseDataService expenseDataService)
         {
             _context = context;
+            _createValidator = createValidator;
+            _userManager = userManager;
+            _expenseDataService = expenseDataService;
         }
+
+        private async Task<ApplicationUser> GetLoggedInUser() {
+            var currentlyLoggedInUser = await  _userManager.FindByEmailAsync(User?.Identity?.Name);
+            return currentlyLoggedInUser;
+        }
+
+        private ExpenseController(){}
 
         // GET: Expense
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Expenses.Include(e => e.ExpenseOwner);
-            return View(await applicationDbContext.ToListAsync());
+            var currentlyLoggedInUser = await GetLoggedInUser();
+            var expenses = _expenseDataService
+                            .GetUserExpenses(currentlyLoggedInUser.Id, new CancellationToken());
+            return View(expenses);
         }
 
         // GET: Expense/Details/5
@@ -51,7 +77,6 @@ namespace ExpenseMVC.Controllers
         {
             var model = new CreateExpenseViewModel();
             model.ExpenseDate = DateTimeOffset.UtcNow.ToLocalTime();
-            model.ExpenseOwnerId = User?.Identity?.Name;
             return View(model);
         }
 
@@ -60,22 +85,40 @@ namespace ExpenseMVC.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(CreateExpenseInputModel expense)
+        public async Task<IActionResult> Create(CreateExpenseViewModel expense)
         {
-            if (ModelState.IsValid)
+            var validationResult = await _createValidator.ValidateAsync(expense);
+            var expenseEntity = new Expense();
+            var currentlyLoggedInUser = await _userManager.FindByEmailAsync(User?.Identity?.Name);
+            if(currentlyLoggedInUser is null) {
+                return NotFound("Could not find you on our servers!"); //add logging.
+            }
+
+            if (validationResult.IsValid)
             {
-                _context.Add(expense);
+                Debug.WriteLine("Validation passed");
+                expenseEntity.ExpenseDate = expense.ExpenseDate;
+                expenseEntity.Name = expense.ExpenseName;
+                expenseEntity.Description = expense.ExpenseDescription;
+                expenseEntity.Amount = expense.ExpenseAmount;
+                expenseEntity.CurrencyUsed = expense.ExpenseCurrencyUsed;
+                expenseEntity.Notes = expense.ExpenseNotes;
+                expenseEntity.ExpenseType = expense.ExpenseType;
+                expenseEntity.CreatedAt = DateTimeOffset.UtcNow;
+                expenseEntity.UpdatedAt = DateTimeOffset.UtcNow;
+                expenseEntity.ExpenseOwnerId = currentlyLoggedInUser.Id;
+                
+                _context.Add(expenseEntity);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ExpenseOwnerId"] = new SelectList(_context.Users, "Id", "Id", expense.ExpenseOwnerId);
             return View(expense);
         }
 
         // GET: Expense/Edit/5
-        public async Task<IActionResult> Edit(Guid? id)
+        public async Task<IActionResult> Edit(Guid id)
         {
-            if (id == null || _context.Expenses == null)
+            if (id == Guid.Empty)
             {
                 return NotFound();
             }
@@ -85,8 +128,19 @@ namespace ExpenseMVC.Controllers
             {
                 return NotFound();
             }
-            ViewData["ExpenseOwnerId"] = new SelectList(_context.Users, "Id", "Id", expense.ExpenseOwnerId);
-            return View(expense);
+
+            var mappedExpense = new ExpenseUpdateViewModel(
+                expense.Name,
+                expense.Description,
+                expense.Amount,
+                expense.ExpenseDate,
+                expense.Id,
+                expense.CurrencyUsed,
+                expense.ExpenseType,
+                expense.Notes ?? string.Empty,
+                HttpContext?.User?.Identity?.Name
+            );
+            return View(mappedExpense!);
         }
 
         // POST: Expense/Edit/5
@@ -94,34 +148,50 @@ namespace ExpenseMVC.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("ExpenseDate,Description,Amount,CurrencyUsed,ReceiptUrl,Notes,ExpenseType,ExpenseOwnerId,Id,CreatedAt,UpdatedAt")] Expense expense)
+        public async Task<IActionResult> Edit(Guid id, ExpenseUpdateViewModel expense)
         {
-            if (id != expense.Id)
+            if(User?.Identity?.Name != expense.ExpenseOwnerEmail) {
+                return NotFound("Could not find you on our servers!"); //add logging.
+            }
+            if (id != expense.ExpenseId)
             {
                 return NotFound();
             }
-
+            var transaction = await _context.Database.BeginTransactionAsync();
             if (ModelState.IsValid)
             {
                 try
                 {
-                    _context.Update(expense);
+                    var expenseEntity = await _context.Expenses.FindAsync(id);
+                    if(expenseEntity is null) {
+                        return NotFound("Could not find the expense you are looking for!"); //add logging.
+                    }
+                    expenseEntity.Name = expense.ExpenseName;
+                    expenseEntity.Description = expense.ExpenseDescription;
+                    expenseEntity.Amount = expense.Amount;
+                    expenseEntity.CurrencyUsed = expense.CurrencyUsed;
+                    expenseEntity.Notes = expense.Notes ?? string.Empty;
+                    expenseEntity.ExpenseType = expense.ExpenseType;
+                    expenseEntity.UpdatedAt = DateTimeOffset.UtcNow;
+                    _context.Entry(expenseEntity).State = EntityState.Modified;
                     await _context.SaveChangesAsync();
+                    await transaction.CommitAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ExpenseExists(expense.Id))
+                    if (!ExpenseExists(expense.ExpenseId))
                     {
                         return NotFound();
                     }
                     else
                     {
+                        transaction.Rollback();
                         throw;
                     }
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ExpenseOwnerId"] = new SelectList(_context.Users, "Id", "Id", expense.ExpenseOwnerId);
+            // ViewData["ExpenseOwnerId"] = new SelectList(_context.Users, "Id", "Id", expense.ExpenseOwnerId);
             return View(expense);
         }
 
@@ -151,14 +221,15 @@ namespace ExpenseMVC.Controllers
         {
             if (_context.Expenses == null)
             {
-                return Problem("Entity set 'ApplicationDbContext.Expenses'  is null.");
+                TempData["Message"] = "Your expenses are empty so you shouldn't have anything to delete.";
+                return Problem("Your expenses are empty so you shouldn't have anything to delete.");
             }
             var expense = await _context.Expenses.FindAsync(id);
-            if (expense != null)
+            if (expense is not null)
             {
                 _context.Expenses.Remove(expense);
             }
-            
+            TempData["Message"] = "Expense deleted successfully";
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }

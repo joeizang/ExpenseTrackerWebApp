@@ -2,6 +2,7 @@ namespace ExpenseMVC.Models;
 
 public class Expense : BaseEntity
 {
+    public string Name { get; set; } = string.Empty;
     public DateTimeOffset ExpenseDate { get; set; }
 
     public string Description { get; set; } = string.Empty;

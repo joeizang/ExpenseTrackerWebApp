@@ -3,9 +3,9 @@ using FluentValidation;
 
 namespace ExpenseMVC.Validators;
 
-public class CreateExpenseInputModelValidator : AbstractValidator<CreateExpenseInputModel>
+public class CreateExpenseViewModelValidator : AbstractValidator<CreateExpenseViewModel>
 {
-    public CreateExpenseInputModelValidator()
+    public CreateExpenseViewModelValidator()
     {
         RuleFor(x => x.ExpenseName)
             .NotEmpty()
@@ -31,8 +31,8 @@ public class CreateExpenseInputModelValidator : AbstractValidator<CreateExpenseI
             .LessThan(DateTime.Now)
             .WithMessage("Expense Date must be in the past");
 
-        RuleFor(x => x.ExpenseOwnerId)
-            .NotEmpty()
-            .WithMessage("Expense Owner is required");
+        RuleFor(x => x.ExpenseNotes)
+            .MaximumLength(500)
+            .WithMessage("Expense Notes must not exceed 500 characters");
     }
 }

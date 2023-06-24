@@ -1,71 +1,73 @@
-@model ExpenseMVC.Models.Expense
+@model ExpenseMVC.ViewModels.ExpenseVM.ExpenseUpdateViewModel
 
 @{
     ViewData["Title"] = "Edit";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Edit</h1>
-
-<h4>Expense</h4>
+<h4>Update an Expense</h4>
 <hr />
-<div class="row">
-    <div class="col-md-4">
+<div class="row px-2 mx-auto d-flex justify-content-center align-items-center">
+    <div class="card p-3 col-10 col-sm-10">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="ExpenseDate" class="control-label"></label>
+
+            <div class="form-group mb-3">
+                <label asp-for="ExpenseDate" class="control-label mb-1"></label>
                 <input asp-for="ExpenseDate" class="form-control" />
                 <span asp-validation-for="ExpenseDate" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
-                <span asp-validation-for="Description" class="text-danger"></span>
+            <div class="form-group mb-3">
+                <label asp-for="ExpenseName" class="control-label mb-1"></label>
+                <input asp-for="ExpenseName" class="form-control" />
+                <span asp-validation-for="ExpenseName" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Amount" class="control-label"></label>
+            
+            <div class="form-group mb-3">
+                <label asp-for="Amount" class="control-label mb-1"></label>
                 <input asp-for="Amount" class="form-control" />
                 <span asp-validation-for="Amount" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="CurrencyUsed" class="control-label"></label>
-                <select asp-for="CurrencyUsed" class="form-control"></select>
+            <div class="form-group mb-3">
+                <label asp-for="CurrencyUsed" class="control-label mb-1"></label>
+                <select asp-for="CurrencyUsed" class="form-control" asp-items="@Html.GetEnumSelectList<Currency>()">
+                    <option value="@Model.CurrencyUsed"> @Model.CurrencyUsed </option>
+                </select>
                 <span asp-validation-for="CurrencyUsed" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="ReceiptUrl" class="control-label"></label>
-                <input asp-for="ReceiptUrl" class="form-control" />
-                <span asp-validation-for="ReceiptUrl" class="text-danger"></span>
+            <div class="form-group mb-3">
+                <label asp-for="ExpenseType" class="control-label mb-1"></label>
+                <select asp-for="ExpenseType" class="form-control" asp-items="@(Html.GetEnumSelectList<ExpenseType>())">
+                    <option value="@Model.ExpenseType">@Model.ExpenseType</option>
+                </select>
+                <span asp-validation-for="ExpenseType" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Notes" class="control-label"></label>
+            <div class="form-group mb-3">
+                <label asp-for="ExpenseDescription" class="control-label mb-1"></label>
+                <input asp-for="ExpenseDescription" class="form-control" />
+                <span asp-validation-for="ExpenseDescription" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="Notes" class="control-label mb-1"></label>
                 <input asp-for="Notes" class="form-control" />
                 <span asp-validation-for="Notes" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="ExpenseType" class="control-label"></label>
-                <select asp-for="ExpenseType" class="form-control"></select>
-                <span asp-validation-for="ExpenseType" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ExpenseOwnerId" class="control-label"></label>
-                <select asp-for="ExpenseOwnerId" class="form-control" asp-items="ViewBag.ExpenseOwnerId"></select>
-                <span asp-validation-for="ExpenseOwnerId" class="text-danger"></span>
-            </div>
-            <input type="hidden" asp-for="Id" />
-            <div class="form-group">
-                <label asp-for="CreatedAt" class="control-label"></label>
-                <input asp-for="CreatedAt" class="form-control" />
-                <span asp-validation-for="CreatedAt" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="UpdatedAt" class="control-label"></label>
-                <input asp-for="UpdatedAt" class="form-control" />
-                <span asp-validation-for="UpdatedAt" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+            <input type="hidden" asp-for="ExpenseId" />
+
+            <div class="form-group mb-3 d-grid gap-2">
+                <button type="submit" value="Save" class="btn btn-secondary fw-bold">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span></span>
+                        <span>Update Expense</span>
+                        <span>
+                            <span class="spinna">
+                                <span class="spinner-sector spinner-sector-green"></span>
+                                <span class="spinner-sector spinner-sector-blue"></span>
+                                <span class="spinner-sector spinner-sector-red"></span>
+                            </span>
+                        </span>
+                    </div>
+                </button>
             </div>
         </form>
     </div>
