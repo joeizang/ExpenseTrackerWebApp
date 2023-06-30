@@ -1,20 +1,34 @@
 ﻿using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using ExpenseMVC.Models;
+using ExpenseMVC.BusinessLogicServices.ExpenseServiceLogic;
+using Microsoft.AspNetCore.Identity;
 
 namespace ExpenseMVC.Controllers;
 
 public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
+    private readonly IExpenseDataService _service;
+    private readonly UserManager<ApplicationUser> _userManager;
 
-    public HomeController(ILogger<HomeController> logger)
+    public HomeController(ILogger<HomeController> logger, IExpenseDataService service, UserManager<ApplicationUser> userManager)
     {
         _logger = logger;
+        _service = service;
+        _userManager = userManager;
     }
 
-    public IActionResult Index()
+    private async Task<string> GetUser()
     {
+        var result = await _userManager.FindByEmailAsync(User?.Identity?.Name!);
+        return result.Id;
+    }
+    public async Task<IActionResult> Index()
+    {
+        var userId = await GetUser().ConfigureAwait(false);
+        ViewBag.Total = _service.GetExpenseTotalForLastMonth(userId);
+        ViewBag.MeanTotalOver55Days = await _service.GetMeanSpendByDays(userId, 55).ConfigureAwait(false);
         return View();
     }
 

@@ -59,18 +59,23 @@ namespace ExpenseMVC.Areas.Identity.Pages.Account.Manage
             [Phone]
             [Display(Name = "Phone number")]
             public string PhoneNumber { get; set; }
+
+            [Display(Name = "Preferred Currency")]
+            public Currency PreferredCurrency { get; set; }
         }
 
         private async Task LoadAsync(ApplicationUser user)
         {
             var userName = await _userManager.GetUserNameAsync(user);
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
+            var preferredCurrency = _userManager.GetUserPreferredCurrency(user);
 
             Username = userName;
 
             Input = new InputModel
             {
-                PhoneNumber = phoneNumber
+                PhoneNumber = phoneNumber,
+                PreferredCurrency = preferredCurrency
             };
         }
 
@@ -101,10 +106,12 @@ namespace ExpenseMVC.Areas.Identity.Pages.Account.Manage
             }
 
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
-            if (Input.PhoneNumber != phoneNumber)
+            var preferredCurrency = _userManager.GetUserPreferredCurrency(user);
+            if (Input.PhoneNumber != phoneNumber || preferredCurrency == 0 || preferredCurrency != Input.PreferredCurrency )
             {
                 var setPhoneResult = await _userManager.SetPhoneNumberAsync(user, Input.PhoneNumber);
-                if (!setPhoneResult.Succeeded)
+                var setPreferredCurrencyResult = await _userManager.SetUserPreferredCurrency(user, Input.PreferredCurrency);
+                if (!setPhoneResult.Succeeded && !setPreferredCurrencyResult.Succeeded)
                 {
                     StatusMessage = "Unexpected error when trying to set phone number.";
                     return RedirectToPage();

@@ -11,6 +11,8 @@ namespace ExpenseMVC.Models
 			Incomes = new List<Income>();
 		}
 
+		public Currency PreferredCurrency { get; set; }
+
 		public string FullName { get; set; } = string.Empty;
 
 		public List<Expense> Expenses { get; set; } = null!;

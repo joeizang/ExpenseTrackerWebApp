@@ -71,3 +71,5 @@ public record ExpenseIndexViewModel(string ExpenseName, string ExpenseDescriptio
 
 public record ExpenseUpdateViewModel(string ExpenseName, string ExpenseDescription, decimal Amount, DateTimeOffset ExpenseDate,
     Guid ExpenseId, Currency CurrencyUsed, ExpenseType ExpenseType, string Notes, string ExpenseOwnerEmail);
+
+public record ExpenseDashBoardSummary(decimal Amount, Currency CurrencyUsed);
