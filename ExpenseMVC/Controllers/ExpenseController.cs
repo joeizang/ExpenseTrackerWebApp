@@ -21,13 +21,13 @@ namespace ExpenseMVC.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IExpenseDataService _expenseDataService;
 
-        public Dictionary<string, string> Themes { get; set; } = new () {
+        public Dictionary<string, string> Themes { get; set; } = new() {
             { "minty", "bootstrap-icons.min.css"},
             { "materia", "bootstrap.materia.min.css" },
             { "quartz", "bootstrap-quartz.min.css" }
         };
 
-        public ExpenseController(ApplicationDbContext context, 
+        public ExpenseController(ApplicationDbContext context,
             IValidator<CreateExpenseViewModel> createValidator,
             UserManager<ApplicationUser> userManager,
             IExpenseDataService expenseDataService)
@@ -38,26 +38,28 @@ namespace ExpenseMVC.Controllers
             _expenseDataService = expenseDataService;
         }
 
-        private async Task<ApplicationUser> GetLoggedInUser() {
-            var currentlyLoggedInUser = await  _userManager.FindByEmailAsync(User!.Identity!.Name!);
+        private async Task<ApplicationUser> GetLoggedInUser()
+        {
+            var currentlyLoggedInUser = await _userManager.FindByEmailAsync(User!.Identity!.Name!);
             return currentlyLoggedInUser!;
         }
 
-        private ExpenseController(){}
+        private ExpenseController() { }
 
         // GET: Expense
         [OutputCache(Duration = 60)]
         public async Task<IActionResult> Index(PagedResult<ExpenseIndexViewModel> model)
         {
+            Console.WriteLine("Index called");
             PagedResult<ExpenseIndexViewModel> expenses = default!;
             var skipValue = (model.PageNumber - 1) * model.PageSize;
             var currentlyLoggedInUser = await GetLoggedInUser();
-            if(model.CurrentFilter == FilterCriteria.ByDate)
+            if (model.CurrentFilter == FilterCriteria.ByDate)
                 expenses = await _expenseDataService.GetUserExpenses(currentlyLoggedInUser.Id).ConfigureAwait(false);
-            if(model.CurrentFilter == FilterCriteria.ByExpenseType)
+            if (model.CurrentFilter == FilterCriteria.ByExpenseType)
                 expenses = await _expenseDataService.GetExpenseTypeFilteredExpenses(currentlyLoggedInUser.Id, skipValue)
                             .ConfigureAwait(false);
-            if(model.CurrentFilter == FilterCriteria.ByCurrencyUsed)
+            if (model.CurrentFilter == FilterCriteria.ByCurrencyUsed)
                 expenses = await _expenseDataService.GetCurrencyUsedFilteredExpenses(currentlyLoggedInUser.Id, skipValue)
                             .ConfigureAwait(false);
             return View(expenses);
@@ -114,7 +116,7 @@ namespace ExpenseMVC.Controllers
                 expenseEntity.CreatedAt = DateTimeOffset.UtcNow;
                 expenseEntity.UpdatedAt = DateTimeOffset.UtcNow;
                 expenseEntity.ExpenseOwnerId = currentlyLoggedInUser.Id;
-                
+
                 _context.Add(expenseEntity);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -172,7 +174,8 @@ namespace ExpenseMVC.Controllers
             try
             {
                 var expenseEntity = await _context.Expenses.FindAsync(id);
-                if(expenseEntity is null) {
+                if (expenseEntity is null)
+                {
                     return NotFound("Could not find the expense you are looking for!"); //add logging.
                 }
                 expenseEntity.Name = expense.ExpenseName;
@@ -243,7 +246,7 @@ namespace ExpenseMVC.Controllers
 
         private bool ExpenseExists(Guid id)
         {
-          return (_context.Expenses?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.Expenses?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }
