@@ -20,8 +20,8 @@ public class CompiledLinqQueries
             EF.CompileAsyncQuery(
                 (ApplicationDbContext context, string userId) =>
                     context.Expenses.AsNoTracking()
-                        .Where(e => e.ExpenseOwner.Id == userId)
                         .OrderBy(e => e.ExpenseDate)
+                        .Where(e => e.ExpenseOwner.Id == userId)
                         .Select(e => new ExpenseIndexViewModel(e.Name, e.Description, e.Amount, e.ExpenseDate, e.Id,
                             e.CurrencyUsed, e.ExpenseType, e.Notes)));
     
@@ -30,9 +30,9 @@ public class CompiledLinqQueries
             EF.CompileAsyncQuery(
                 (ApplicationDbContext context, int skipValue, string userId) =>
                     context.Expenses.AsNoTracking()
-                        .Where(e => e.ExpenseOwnerId == userId)
                         .OrderBy(e => e.ExpenseType)
                         .ThenBy(e => e.ExpenseDate)
+                        .Where(e => e.ExpenseOwnerId == userId)
                         .Skip(skipValue)
                         .Select(e => new ExpenseIndexViewModel(e.Name, e.Description, e.Amount, e.ExpenseDate, e.Id,
                             e.CurrencyUsed, e.ExpenseType, e.Notes))
@@ -43,9 +43,9 @@ public class CompiledLinqQueries
             EF.CompileAsyncQuery(
                 (ApplicationDbContext context, int skipValue, string userId) =>
                     context.Expenses.AsNoTracking()
-                        .Where(e => e.ExpenseOwnerId == userId)
                         .OrderBy(e => e.CurrencyUsed)
                         .ThenBy(e => e.ExpenseDate)
+                        .Where(e => e.ExpenseOwnerId == userId)
                         .Skip(skipValue)
                         .Select(e => new ExpenseIndexViewModel(e.Name, e.Description, e.Amount, e.ExpenseDate, e.Id,
                             e.CurrencyUsed, e.ExpenseType, e.Notes))

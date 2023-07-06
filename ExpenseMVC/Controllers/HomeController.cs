@@ -2,10 +2,13 @@
 using Microsoft.AspNetCore.Mvc;
 using ExpenseMVC.Models;
 using ExpenseMVC.BusinessLogicServices.ExpenseServiceLogic;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.OutputCaching;
 
 namespace ExpenseMVC.Controllers;
 
+[Authorize]
 public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
@@ -24,6 +27,8 @@ public class HomeController : Controller
         var result = await _userManager.FindByEmailAsync(User?.Identity?.Name!);
         return result.Id;
     }
+
+    [OutputCache(Duration = 60)]
     public async Task<IActionResult> Index()
     {
         var userId = await GetUser().ConfigureAwait(false);

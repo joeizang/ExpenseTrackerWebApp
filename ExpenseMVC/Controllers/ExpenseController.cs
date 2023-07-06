@@ -9,6 +9,7 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 using ExpenseMVC.BusinessLogicServices.ExpenseServiceLogic;
+using Microsoft.AspNetCore.OutputCaching;
 
 namespace ExpenseMVC.Controllers
 {
@@ -45,6 +46,7 @@ namespace ExpenseMVC.Controllers
         private ExpenseController(){}
 
         // GET: Expense
+        [OutputCache(Duration = 60)]
         public async Task<IActionResult> Index(PagedResult<ExpenseIndexViewModel> model)
         {
             PagedResult<ExpenseIndexViewModel> expenses = default!;
@@ -98,9 +100,6 @@ namespace ExpenseMVC.Controllers
             var validationResult = await _createValidator.ValidateAsync(expense);
             var expenseEntity = new Expense();
             var currentlyLoggedInUser = await GetLoggedInUser();
-            if(currentlyLoggedInUser is null) {
-                return NotFound("Could not find you on our servers!"); //add logging.
-            }
 
             if (validationResult.IsValid)
             {
@@ -169,41 +168,38 @@ namespace ExpenseMVC.Controllers
                 return NotFound();
             }
             var transaction = await _context.Database.BeginTransactionAsync();
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid) return View(expense);
+            try
             {
-                try
-                {
-                    var expenseEntity = await _context.Expenses.FindAsync(id);
-                    if(expenseEntity is null) {
-                        return NotFound("Could not find the expense you are looking for!"); //add logging.
-                    }
-                    expenseEntity.Name = expense.ExpenseName;
-                    expenseEntity.Description = expense.ExpenseDescription;
-                    expenseEntity.Amount = expense.Amount;
-                    expenseEntity.CurrencyUsed = expense.CurrencyUsed;
-                    expenseEntity.Notes = expense.Notes ?? string.Empty;
-                    expenseEntity.ExpenseType = expense.ExpenseType;
-                    expenseEntity.UpdatedAt = DateTimeOffset.UtcNow;
-                    _context.Entry(expenseEntity).State = EntityState.Modified;
-                    await _context.SaveChangesAsync();
-                    await transaction.CommitAsync();
+                var expenseEntity = await _context.Expenses.FindAsync(id);
+                if(expenseEntity is null) {
+                    return NotFound("Could not find the expense you are looking for!"); //add logging.
                 }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!ExpenseExists(expense.ExpenseId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        transaction.Rollback();
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                expenseEntity.Name = expense.ExpenseName;
+                expenseEntity.Description = expense.ExpenseDescription;
+                expenseEntity.Amount = expense.Amount;
+                expenseEntity.CurrencyUsed = expense.CurrencyUsed;
+                expenseEntity.Notes = expense.Notes ?? string.Empty;
+                expenseEntity.ExpenseType = expense.ExpenseType;
+                expenseEntity.UpdatedAt = DateTimeOffset.UtcNow;
+                _context.Entry(expenseEntity).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
             }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!ExpenseExists(expense.ExpenseId))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    await transaction.RollbackAsync();
+                    throw;
+                }
+            }
+            return RedirectToAction(nameof(Index));
             // ViewData["ExpenseOwnerId"] = new SelectList(_context.Users, "Id", "Id", expense.ExpenseOwnerId);
-            return View(expense);
         }
 
         // GET: Expense/Delete/5

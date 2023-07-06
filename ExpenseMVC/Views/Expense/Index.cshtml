@@ -21,7 +21,7 @@
     }
 }
 <br/>
-<div class="row flex-column d-flex">
+<div class="row flex-column d-flex col-sm-10 col-md-12 justify-content-center align-items-center mx-auto">
     <section id="actions" class="mb-3 d-flex p-2 justify-content-between align-items-center">
         <div><span class="display-5">My Expenses</span></div>
         <div></div>
@@ -32,10 +32,10 @@
         </div>
     </section>
     
-    <section id="mainArea">
+    <section id="mainArea" class="w-100">
         @foreach(var expense in Model.Items) 
         {
-            <div class="card bg-light p-2 mb-3 col-sm-10 col-md-4 col-lg-3 rounded-1 shadow">
+            <div class="card bg-light p-2 mb-3 col-sm-10 col-lg-9 col-md-10 rounded-1 shadow">
                 <span class="d-flex justify-content-between align-items-center mb-1">
                     <span class="badge rounded-pill bg-info badge-primary">@expense.ExpenseDate.ToString("d")</span>
                     <span>
@@ -114,9 +114,7 @@
                     &laquo;
                 </a>
             </li>
-            <li class="page-item active">
-            <a class="page-link" href="#">@Model.PageNumber</a>
-            </li>
+            
             <li class="page-item @hasNextPage">
                 <a
                     class="page-link"

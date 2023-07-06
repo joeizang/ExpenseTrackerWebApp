@@ -7,6 +7,7 @@ using ExpenseMVC.Validators;
 using ExpenseMVC.ViewModels.ExpenseVM;
 using FluentValidation;
 using ExpenseMVC.BusinessLogicServices.ExpenseServiceLogic;
+using Microsoft.Extensions.Options;
 
 DotEnv.Load();
 
@@ -14,8 +15,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 var connectionString = builder.Configuration["MYSQLDB"] ?? throw new InvalidOperationException("Connection string 'MYSQLDB' not found.");
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseMySQL(connectionString));
+builder.Services.AddDbContextPool<ApplicationDbContext>(options => {
+    options.UseModel(ApplicationDbContextModel.Instance);
+    options.UseMySQL(connectionString);
+});
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddScoped<IExpenseDataService, ExpenseDataService>();
@@ -29,6 +32,9 @@ builder.Services.AddAuthentication()
     });
 builder.Services.AddScoped<IValidator<CreateExpenseViewModel>, CreateExpenseViewModelValidator>();
 builder.Services.AddControllersWithViews();
+builder.Services.AddOutputCache(options => {
+    options.AddBasePolicy(builder => builder.Expire(TimeSpan.FromSeconds(30)));
+}); 
 
 var app = builder.Build();
 
@@ -48,13 +54,12 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-
 app.UseAuthorization();
+app.UseOutputCache();
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 app.MapRazorPages();
-
 app.Run();
 

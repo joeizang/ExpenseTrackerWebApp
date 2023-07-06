@@ -1,11 +1,18 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Dashboard Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <h1>30 Day total: @ViewBag.Total</h1>
-    <h1>Mean spend over 55 Days @ViewBag.MeanTotalOver55Days</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+
+    <section class="jumbo-bg d-flex flex-column justify-content-start align-items-center">
+        <div>
+            <p class="text-white display-5 fw-bold pt-2">₦ @ViewBag.Total</p>
+        </div>
+        <div class="text-center d-flex justify-content-between">
+            <span class="text-white fw-semibold">Last @ViewBag.DayAverage Average spend</span><span>₦ @ViewBag.MeanTotalOver55Days</span> 
+        </div>
+    </section>
+    <section>
+
+    </section>
+
 

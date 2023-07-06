@@ -5,7 +5,7 @@
     ViewData["Title"] = "Log in";
 }
 
-<h1>@ViewData["Title"]</h1>
+
 <div class="row">
     @* <div class="col-md-4">
         <section>
@@ -46,9 +46,9 @@
             </form>
         </section>
     </div> *@
-    <div class="col-sm-10 col-md-6 col-md-offset-2 mx-auto">
-        <section>
-            <h3 class="display-5">Use another service to log in.</h3>
+    <div class="col-sm-10 col-md-6 col-md-offset-2 mx-auto my-5">
+        <section class="d-flex flex-column justify-content-center align-items-center">
+            <h3 class="display-5">Welcome to Frugl</h3>
             <hr />
             @{
                 if ((Model.ExternalLogins?.Count ?? 0) == 0)
@@ -62,12 +62,18 @@
                 }
                 else
                 {
-                    <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
+                    <form 
+                        id="external-account"
+                        asp-page="./ExternalLogin"
+                        asp-route-returnUrl="@Model.ReturnUrl"
+                        method="post"
+                        class="form-horizontal"
+                    >
                         <div>
                             <p>
                                 @foreach (var provider in Model.ExternalLogins!)
                                 {
-                                    <button type="submit" class="btn btn-primary" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">@provider.DisplayName</button>
+                                    <button type="submit" class="btn btn-lg btn-primary" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">@provider.DisplayName</button>
                                 }
                             </p>
                         </div>
