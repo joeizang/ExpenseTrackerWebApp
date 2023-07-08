@@ -15,10 +15,11 @@ DotEnv.Load();
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-var connectionString = builder.Configuration["MYSQLDB"] ?? throw new InvalidOperationException("Connection string 'MYSQLDB' not found.");
+// var connectionString = builder.Configuration["MYSQLDB"] ?? throw new InvalidOperationException("Connection string 'MYSQLDB' not found.");
+var azuremysql = builder.Configuration.GetConnectionString("DefaultConnection");
 // var ssqlconnect = builder.Configuration["DefaultConnection"];
 builder.Services.AddDbContextPool<ApplicationDbContext>(options => {
-    options.UseMySQL(connectionString);
+    options.UseMySQL(azuremysql);
 });
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddSingleton(typeof(ThemeService));

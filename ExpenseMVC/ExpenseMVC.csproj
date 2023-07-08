@@ -31,4 +31,8 @@
     <Folder Include="BackgroundServices/" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="bin\Release\net7.0\DigiCertGlobalRootCA.crt.pem" />
+  </ItemGroup>
+
 </Project>
