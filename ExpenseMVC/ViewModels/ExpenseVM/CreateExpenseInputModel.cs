@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using ExpenseMVC.Models;
-using Microsoft.AspNetCore.Mvc.Rendering;
+
 
 namespace ExpenseMVC.ViewModels.ExpenseVM;
 
@@ -57,6 +57,10 @@ public class CreateExpenseInputModel
     [Required]
     [Display(Name = "Expense Type Selected")]
     public int ExpenseTypeSelected { get; set; }
+
+    public Currency CurrencyUsed { get; set; }
+
+
 
     [Required]
     [Display(Name = "Expense Date")]
