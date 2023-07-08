@@ -7,12 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - ExpenseMVC</title>
-    @if(ViewBag.themeName is not null)
-    {
-        <link rel="stylesheet" href="~/css/@ViewBag.themeName" />
-    } else {
-        <link rel="stylesheet" href="~/css/bootstrap.minty.min.css" />
-    }
+    <link rel="stylesheet" href="~/css/bootstrap.minty.min.css" />
     <link rel="stylesheet" href="~/lib/bootstrap-icons/font/bootstrap-icons.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/ExpenseMVC.styles.css" asp-append-version="true" />
@@ -20,65 +15,61 @@
 @{
     var routeData = ViewContext.RouteData;
     var controller = routeData?.Values["controller"]?.ToString();
-    var action = routeData?.Values["action"]?.ToString();
 }
 <body>
-    <header>
-        @if (controller != "Home")
-        {
-            <nav class="navbar navbar-expand navbar-toggleable-sm navbar-dark bg-primary border-bottom box-shadow">
-                <div class="container-fluid">
-                    <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
-                        <i class="bi bi-cash-stack"></i>
-                    </a>
-                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                            aria-expanded="false" aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-                    <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                        <ul class="navbar-nav flex-grow-1 mr-3">
-                            @if (SignInManager.IsSignedIn(User))
-                            {
-                                <li class="nav-item text-white">
-                                    <a class="nav-link" asp-area="" asp-controller="Expense" asp-action="Index">
-                                        <i class="bi bi-cash-coin"></i>
-                                    </a>
-                                </li>
-                            }
-                        </ul>
-                            <partial name="_LoginPartial"/>
-                    </div>
-                </div>
-            </nav>
-        }
-        else
-        {
-            <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-primary box-shadow">
-                <div class="container-fluid">
-                    <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
-                        <i class="bi bi-cash-stack fs-3"></i>
-                    </a>
-                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                            aria-expanded="false" aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-                    <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                        <ul class="navbar-nav flex-grow-1 mr-3">
-                            <li class="nav-item text-white fs-3" style="color: #ffffff;">
-                                <a class="nav-link" asp-area="" asp-controller="Expense" asp-action="Index">
-                                    <i class="bi bi-cash-coin"></i>
-                                </a>
-                            </li>
-                            @* <li class="nav-item"> *@
-                            @*     <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a> *@
+<header>
+    @if (controller != "Home")
+    {
+        <nav class="navbar navbar-expand navbar-toggleable-sm navbar-dark bg-primary border-bottom box-shadow">
+            <div class="container-fluid">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                    <i class="bi bi-house-fill"></i>
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1 mr-3">
+                        @if (SignInManager.IsSignedIn(User))
+                        {
+                            @* <li class="nav-item text-white text-decoration-none fs-3"> *@
+                            @*     <a class="nav-link" asp-area="" asp-controller="Expense" asp-action="Index"> *@
+                            @*         <i class="bi bi-cash-coin"></i> *@
+                            @*     </a> *@
                             @* </li> *@
-                        </ul>
-                        <partial name="_LoginPartial" />
-                    </div>
+                        }
+                    </ul>
+                    <partial name="_LoginPartial"/>
                 </div>
-            </nav>
-        }
-    </header>
+            </div>
+        </nav>
+    }
+    else
+    {
+        <nav class="navbar navbar-expand navbar-toggleable-sm navbar-dark bg-primary box-shadow">
+            <div class="container-fluid align-items-center d-flex justify-content-center">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                    <i class="bi bi-house-fill fs-3"></i>
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1 mr-3">
+                        <li class="nav-item text-white fs-3 text-decoration-none" style="color: #ffffff;">
+                            <a class="nav-link pb-1" asp-area="" asp-controller="Expense" asp-action="Index">
+                                <span class="bi bi-cash-stack text-white  fs-3"></span>
+                            </a>
+                        </li>
+                    </ul>
+                    <partial name="_LoginPartial"/>
+                </div>
+            </div>
+        </nav>
+    }
+</header>
     <div class="container-fluid mx-0 px-0">
         <main role="main" class="pb-3">
             @RenderBody()
@@ -87,7 +78,7 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2023 - Frugl App - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; 2023 - Frugl App - <a asp-area="" asp-controller="Home" asp-action="">Privacy</a>
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

@@ -14,5 +14,16 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<Expense> Expenses { get; set; } = null!;
     
     public DbSet<Income> Incomes { get; set; } = null!;
+
+    protected override void OnModelCreating(ModelBuilder builder)
+    {
+        builder.Entity<Expense>()
+            .Property(e => e.Amount)
+            .HasPrecision(2);
+        builder.Entity<Income>()
+            .Property(i => i.Amount)
+            .HasPrecision(2);
+        base.OnModelCreating(builder);
+    }
 }
 

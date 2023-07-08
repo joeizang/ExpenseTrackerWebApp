@@ -126,7 +126,13 @@
         </ul>
         <div class="form-group mb-3">
             <div class="dropdown">
-              <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <button 
+                    class="btn btn-primary
+                    dropdown-toggle"
+                    type="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                >
                 Filter Expenses
               </button>
               <ul class="dropdown-menu">
@@ -176,10 +182,6 @@
                     }
                 })
             });
-        });
-        document.getElementById('filterselect').addEventListener('change', () => {
-            document.getElementById('filterForm').submit();
-        })
-        
+        });        
     </script>
 }

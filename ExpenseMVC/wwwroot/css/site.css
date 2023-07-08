@@ -11,3 +11,17 @@
         background: url("../img/wave-haikei.svg") no-repeat center;
     }
 }
+
+.jumbo-materia-bg {
+    height: 40vh;
+    width: 100vw;
+    background-size: cover;
+    background: url("../img/wave-materia-mobile.svg") no-repeat center;
+}
+
+@media  screen and (min-width: 768px) {
+    .jumbo-materia-bg {
+        height: 60vh;
+        background: url("../img/wave-materia-desktop.svg") no-repeat center;
+    }
+}

@@ -6,6 +6,7 @@ using ExpenseMVC.Models;
 using ExpenseMVC.ViewModels.ExpenseVM;
 using FluentValidation;
 using System.Diagnostics;
+using ExpenseMVC.BusinessLogicServices;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 using ExpenseMVC.BusinessLogicServices.ExpenseServiceLogic;
@@ -20,12 +21,6 @@ namespace ExpenseMVC.Controllers
         private readonly IValidator<CreateExpenseViewModel> _createValidator;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IExpenseDataService _expenseDataService;
-
-        public Dictionary<string, string> Themes { get; set; } = new() {
-            { "minty", "bootstrap-icons.min.css"},
-            { "materia", "bootstrap.materia.min.css" },
-            { "quartz", "bootstrap-quartz.min.css" }
-        };
 
         public ExpenseController(ApplicationDbContext context,
             IValidator<CreateExpenseViewModel> createValidator,
@@ -50,7 +45,6 @@ namespace ExpenseMVC.Controllers
         [OutputCache(Duration = 60)]
         public async Task<IActionResult> Index(PagedResult<ExpenseIndexViewModel> model)
         {
-            Console.WriteLine("Index called");
             PagedResult<ExpenseIndexViewModel> expenses = default!;
             var skipValue = (model.PageNumber - 1) * model.PageSize;
             var currentlyLoggedInUser = await GetLoggedInUser();
@@ -63,25 +57,6 @@ namespace ExpenseMVC.Controllers
                 expenses = await _expenseDataService.GetCurrencyUsedFilteredExpenses(currentlyLoggedInUser.Id, skipValue)
                             .ConfigureAwait(false);
             return View(expenses);
-        }
-
-        // GET: Expense/Details/5
-        public async Task<IActionResult> Details(Guid? id)
-        {
-            if (id == null || _context.Expenses == null)
-            {
-                return NotFound();
-            }
-
-            var expense = await _context.Expenses
-                .Include(e => e.ExpenseOwner)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (expense == null)
-            {
-                return NotFound();
-            }
-
-            return View(expense);
         }
 
         // GET: Expense/Create
@@ -133,7 +108,7 @@ namespace ExpenseMVC.Controllers
             }
 
             var expense = await _context.Expenses.Include(x => x.ExpenseOwner)
-                            .SingleOrDefaultAsync(x => x.Id.Equals(id));
+                            .SingleOrDefaultAsync(x => x.Id == id);
             if (expense == null)
             {
                 return NotFound();
@@ -162,9 +137,6 @@ namespace ExpenseMVC.Controllers
         public async Task<IActionResult> Edit(Guid id, ExpenseUpdateViewModel expense)
         {
             var user = await _userManager.FindByEmailAsync(expense.ExpenseOwnerEmail);
-            // if(User!.Identity!.Name! == expense.ExpenseOwnerEmail) {
-            //     return NotFound("Could not find you on our servers!"); //add logging.
-            // }
             if (id != expense.ExpenseId)
             {
                 return NotFound();
@@ -202,7 +174,6 @@ namespace ExpenseMVC.Controllers
                 }
             }
             return RedirectToAction(nameof(Index));
-            // ViewData["ExpenseOwnerId"] = new SelectList(_context.Users, "Id", "Id", expense.ExpenseOwnerId);
         }
 
         // GET: Expense/Delete/5

@@ -2,17 +2,46 @@
     ViewData["Title"] = "Dashboard Page";
 }
 
+<section class="jumbo-bg d-flex flex-column justify-content-start align-items-center">
+    <div class="text-white pt-3 d-flex align-items-center mb-2 gap-3 justify-content-center">
+        <span class="display-5 fw-bold" data-user-total="@ViewBag.Total" id="expenseTotal">₦ XXXXXX.XX</span>
+        <span class="form-check form-switch border-white">
+            <input type="checkbox" value="false" class="form-check-input border-secondary"
+                   role="switch" id="showfigures"/>
+        </span>
+    </div>
+    <div class="mb-5 text-white fw-bold">
+        <span>Total expenditure for the last 30 days</span>
+    </div>
+    <div class="text-center mb-3 text-white fw-semibold gap-3 d-flex justify-content-between">
+        <span class="">
+            Last @(ViewBag.DayAverage > 0 ? $"{ViewBag.DayAverage} day" : "") Average spend
+        </span>
+        <span> ₦ @ViewBag.MeanTotalOver55Days</span>
+    </div>
 
-    <section class="jumbo-bg d-flex flex-column justify-content-start align-items-center">
-        <div>
-            <p class="text-white display-5 fw-bold pt-2">₦ @ViewBag.Total</p>
-        </div>
-        <div class="text-center d-flex justify-content-between">
-            <span class="text-white fw-semibold">Last @ViewBag.DayAverage Average spend</span><span>₦ @ViewBag.MeanTotalOver55Days</span> 
-        </div>
-    </section>
-    <section>
+    <a class="text-white d-flex justify-content-center align-items-center text-decoration-none" asp-action="Create" asp-controller="Expense">
+        <span class="bi bi-plus-circle-fill fs-3 me-2"></span>
+        <span>Create Expense</span>
+    </a>
+</section>
+<section class="d-flex justify-content-center text-black">
 
-    </section>
+</section>
 
 
+@section Scripts {
+    <script>
+        $(document).ready(function (){
+            const totalExpense = $("#expenseTotal")
+            const checkSwitch = $("#showfigures")
+            checkSwitch.change(function (eve) {
+                if (this.checked) {
+                  totalExpense.text(`₦ ${totalExpense.data("user-total")}`)
+                } else {
+                  totalExpense.text(`₦ XXXXXX.XX`)
+                }
+            })
+        })
+    </script>
+}

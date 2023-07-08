@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using ExpenseMVC.Data;
 using ExpenseMVC.Models;
 using dotenv.net;
+using ExpenseMVC.BusinessLogicServices;
 using ExpenseMVC.Validators;
 using ExpenseMVC.ViewModels.ExpenseVM;
 using FluentValidation;
@@ -14,12 +15,14 @@ DotEnv.Load();
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-var connectionString = builder.Configuration["MYSQLDB"] ?? throw new InvalidOperationException("Connection string 'MYSQLDB' not found.");
+// var connectionString = builder.Configuration["MYSQLDB"] ?? throw new InvalidOperationException("Connection string 'MYSQLDB' not found.");
+var ssqlconnect = builder.Configuration["DefaultConnection"];
 builder.Services.AddDbContextPool<ApplicationDbContext>(options => {
     options.UseModel(ApplicationDbContextModel.Instance);
-    options.UseMySQL(connectionString);
+    options.UseSqlServer(ssqlconnect);
 });
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+builder.Services.AddSingleton(typeof(ThemeService));
 
 builder.Services.AddScoped<IExpenseDataService, ExpenseDataService>();
 
