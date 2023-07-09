@@ -25,7 +25,7 @@ builder.Services.AddDbContextPool<ApplicationDbContext>(options => {
 builder.Services.AddDbContext<DataProtectionContext>(options =>
 {
     options.UseMySQL(dataProtectString);
-})
+});
 builder.Services.AddDataProtection()
     .PersistKeysToDbContext<DataProtectionContext>();
 
