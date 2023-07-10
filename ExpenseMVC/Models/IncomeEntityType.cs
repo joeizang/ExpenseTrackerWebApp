@@ -31,7 +31,8 @@ namespace ExpenseMVC.Models
                 "Amount",
                 typeof(decimal),
                 propertyInfo: typeof(Income).GetProperty("Amount", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(Income).GetField("<Amount>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+                fieldInfo: typeof(Income).GetField("<Amount>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                precision: 2);
 
             var createdAt = runtimeEntityType.AddProperty(
                 "CreatedAt",

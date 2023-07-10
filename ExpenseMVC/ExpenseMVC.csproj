@@ -36,4 +36,9 @@
     <None Include="bin\Release\net7.0\DigiCertGlobalRootCA.crt.pem" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
+  </ItemGroup>
+
+
 </Project>

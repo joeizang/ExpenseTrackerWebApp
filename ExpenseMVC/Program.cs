@@ -21,10 +21,13 @@ var connectionString = builder.Configuration["MYSQLDB"] ?? throw new InvalidOper
 var dataProtectString = builder.Configuration["MYSQLDataProtect"] ?? throw new InvalidOperationException("Connection string 'MYSQLDB' not found.");
 builder.Services.AddDbContextPool<ApplicationDbContext>(options => {
     options.UseMySQL(connectionString);
+    options.UseModel(ApplicationDbContextModel.Instance);
 });
 builder.Services.AddDbContext<DataProtectionContext>(options =>
 {
     options.UseMySQL(dataProtectString);
+    options.UseModel(DataProtectionContextModel.Instance);
+
 });
 builder.Services.AddDataProtection()
     .PersistKeysToDbContext<DataProtectionContext>();
