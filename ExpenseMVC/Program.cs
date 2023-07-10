@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using ExpenseMVC.Data;
 using ExpenseMVC.Models;
 using dotenv.net;
+using ExpenseMVC;
 using ExpenseMVC.BusinessLogicServices;
 using ExpenseMVC.Validators;
 using ExpenseMVC.ViewModels.ExpenseVM;
@@ -49,6 +50,10 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
 builder.Services.Configure<CookieAuthenticationOptions>(
     IdentityConstants.ExternalScheme,
     scheme => scheme.Cookie.SameSite = SameSiteMode.None
+);
+builder.Services.Configure<CookieAuthenticationOptions>(
+    IdentityConstants.ExternalScheme,
+    scheme => scheme.CookieManager = new CookieManagerWrapper()
 );
 builder.Services.AddAuthentication()
     .AddGoogle(opt => {
