@@ -48,11 +48,11 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
         options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.Configure<CookieAuthenticationOptions>(
-    IdentityConstants.ExternalScheme,
+    IdentityConstants.ApplicationScheme,
     scheme => scheme.Cookie.SameSite = SameSiteMode.None
 );
 builder.Services.Configure<CookieAuthenticationOptions>(
-    IdentityConstants.ExternalScheme,
+    IdentityConstants.ApplicationScheme,
     scheme => scheme.CookieManager = new CookieManagerWrapper()
 );
 builder.Services.AddAuthentication()
