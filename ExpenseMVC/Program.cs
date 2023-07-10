@@ -56,6 +56,13 @@ builder.Services.Configure<CookieAuthenticationOptions>(
     scheme => scheme.CookieManager = new CookieManagerWrapper()
 );
 builder.Services.AddAuthentication()
+    .AddCookie(x =>
+    {
+        x.CookieManager = new CookieManagerWrapper();
+        x.Cookie.SameSite = SameSiteMode.None;
+        x.Cookie.HttpOnly = true;
+        x.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    })
     .AddGoogle(opt => {
         opt.ClientId = builder.Configuration["CLIENT_ID"]!;
         opt.ClientSecret = builder.Configuration["CLIENT_SECRET"]!;
