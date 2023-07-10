@@ -11,14 +11,19 @@ using ExpenseMVC.BusinessLogicServices.ExpenseServiceLogic;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Authentication;
+using Google.Protobuf.WellKnownTypes;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 DotEnv.Load();
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-var connectionString = builder.Configuration["MYSQLDB"] ?? throw new InvalidOperationException("Connection string 'MYSQLDB' not found.");
-var dataProtectString = builder.Configuration["MYSQLDataProtect"] ?? throw new InvalidOperationException("Connection string 'MYSQLDB' not found.");
+var connectionString = builder.Configuration["MYSQLDB"] 
+                       ?? throw new InvalidOperationException("Connection string 'MYSQLDB' not found.");
+var dataProtectString = builder.Configuration["MYSQLDataProtect"] 
+                        ?? throw new InvalidOperationException("Connection string 'MYSQLDB' not found.");
 builder.Services.AddDbContextPool<ApplicationDbContext>(options => {
     options.UseMySQL(connectionString);
     options.UseModel(ApplicationDbContextModel.Instance);
@@ -38,8 +43,13 @@ builder.Services.AddSingleton(typeof(ThemeService));
 
 builder.Services.AddScoped<IExpenseDataService, ExpenseDataService>();
 
-builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+builder.Services.AddDefaultIdentity<ApplicationUser>(options => 
+        options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<ApplicationDbContext>();
+builder.Services.Configure<CookieAuthenticationOptions>(
+    IdentityConstants.ExternalScheme,
+    scheme => scheme.Cookie.SameSite = SameSiteMode.None
+);
 builder.Services.AddAuthentication()
     .AddGoogle(opt => {
         opt.ClientId = builder.Configuration["CLIENT_ID"]!;
