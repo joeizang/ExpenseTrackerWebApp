@@ -71,15 +71,23 @@ builder.Services.AddScoped<IValidator<CreateExpenseViewModel>, CreateExpenseView
 builder.Services.AddControllersWithViews();
 builder.Services.AddOutputCache(options => {
     options.AddBasePolicy(builder => builder.Expire(TimeSpan.FromSeconds(30)));
-}); 
+});
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+});
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-app.UseForwardedHeaders(new ForwardedHeadersOptions()
+app.Use((context, next) =>
 {
-    ForwardedHeaders = ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedFor
+    context.Request.Host = new HostString("fruglapp.prodigeenet.com");
+    context.Request.Scheme = "https";
+    return next();
 });
+
+// Configure the HTTP request pipeline.
+app.UseForwardedHeaders();
 
 if (app.Environment.IsDevelopment())
 {
