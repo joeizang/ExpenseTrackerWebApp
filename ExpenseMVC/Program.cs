@@ -47,22 +47,22 @@ builder.Services.AddScoped<IExpenseDataService, ExpenseDataService>();
 builder.Services.AddDefaultIdentity<ApplicationUser>(options => 
         options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<ApplicationDbContext>();
-builder.Services.Configure<CookieAuthenticationOptions>(
-    IdentityConstants.ApplicationScheme,
-    scheme => scheme.Cookie.SameSite = SameSiteMode.None
-);
-builder.Services.Configure<CookieAuthenticationOptions>(
-    IdentityConstants.ApplicationScheme,
-    scheme => scheme.CookieManager = new CookieManagerWrapper()
-);
+// builder.Services.Configure<CookieAuthenticationOptions>(
+//     IdentityConstants.ApplicationScheme,
+//     scheme => scheme.Cookie.SameSite = SameSiteMode.None
+// );
+// builder.Services.Configure<CookieAuthenticationOptions>(
+//     IdentityConstants.ApplicationScheme,
+//     scheme => scheme.CookieManager = new CookieManagerWrapper()
+// );
 builder.Services.AddAuthentication()
-    .AddCookie(x =>
-    {
-        x.CookieManager = new CookieManagerWrapper();
-        x.Cookie.SameSite = SameSiteMode.None;
-        x.Cookie.HttpOnly = true;
-        x.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-    })
+    // .AddCookie(x =>
+    // {
+    //     x.CookieManager = new CookieManagerWrapper();
+    //     x.Cookie.SameSite = SameSiteMode.None;
+    //     x.Cookie.HttpOnly = true;
+    //     x.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    // })
     .AddGoogle(opt => {
         opt.ClientId = builder.Configuration["CLIENT_ID"]!;
         opt.ClientSecret = builder.Configuration["CLIENT_SECRET"]!;
