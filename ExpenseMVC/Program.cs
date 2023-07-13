@@ -37,7 +37,7 @@ builder.Services.AddDbContext<DataProtectionContext>(options =>
 });
 builder.Services.AddDataProtection()
     .PersistKeysToDbContext<DataProtectionContext>();
-
+builder.Services.AddTransient<IAppEmailSender, EmailService>();
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddSingleton(typeof(ThemeService));
@@ -50,8 +50,8 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
 
 builder.Services.Configure<IdentityOptions>(options =>
 {
-    options.SignIn.RequireConfirmedAccount = false;
-    options.SignIn.RequireConfirmedEmail = false;
+    options.SignIn.RequireConfirmedAccount = true;
+    options.SignIn.RequireConfirmedEmail = true;
 });
 
 builder.Services.AddAuthentication();
