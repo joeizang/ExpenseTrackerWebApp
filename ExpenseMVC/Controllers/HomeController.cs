@@ -16,17 +16,20 @@ public class HomeController : Controller
     private readonly IExpenseDataService _service;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly ThemeService _themeService;
+    private readonly IConfiguration _config;
 
     public HomeController(
         ILogger<HomeController> logger,
         IExpenseDataService service,
         UserManager<ApplicationUser> userManager,
-        ThemeService themeService)
+        ThemeService themeService,
+        IConfiguration config)
     {
         _logger = logger;
         _service = service;
         _userManager = userManager;
         _themeService = themeService;
+        _config = config;
     }
 
     private async Task<string> GetUser()
@@ -38,6 +41,8 @@ public class HomeController : Controller
     [OutputCache(Duration = 60)]
     public async Task<IActionResult> Index()
     {
+        var apiKey = _config["SENDGRID_API_KEY"];
+        // await EmailService.SendEmail(apiKey, "josephizang@prodigeenet.com", "joeizang@hotmail.com", "Testing sendgrid");
         var userId = await GetUser().ConfigureAwait(false);
         ViewBag.DayAverage = 3;
         ViewBag.Total = _service.GetExpenseTotalForLastMonth(userId);

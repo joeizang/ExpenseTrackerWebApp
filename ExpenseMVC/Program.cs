@@ -47,26 +47,19 @@ builder.Services.AddScoped<IExpenseDataService, ExpenseDataService>();
 builder.Services.AddDefaultIdentity<ApplicationUser>(options => 
         options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<ApplicationDbContext>();
-// builder.Services.Configure<CookieAuthenticationOptions>(
-//     IdentityConstants.ApplicationScheme,
-//     scheme => scheme.Cookie.SameSite = SameSiteMode.None
-// );
-// builder.Services.Configure<CookieAuthenticationOptions>(
-//     IdentityConstants.ApplicationScheme,
-//     scheme => scheme.CookieManager = new CookieManagerWrapper()
-// );
-builder.Services.AddAuthentication()
-    // .AddCookie(x =>
-    // {
-    //     x.CookieManager = new CookieManagerWrapper();
-    //     x.Cookie.SameSite = SameSiteMode.None;
-    //     x.Cookie.HttpOnly = true;
-    //     x.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-    // })
-    .AddGoogle(opt => {
-        opt.ClientId = builder.Configuration["CLIENT_ID"]!;
-        opt.ClientSecret = builder.Configuration["CLIENT_SECRET"]!;
-    });
+
+builder.Services.Configure<IdentityOptions>(options =>
+{
+    options.SignIn.RequireConfirmedAccount = false;
+    options.SignIn.RequireConfirmedEmail = false;
+});
+
+builder.Services.AddAuthentication();
+    //
+    // .AddGoogle(opt => {
+    //     opt.ClientId = builder.Configuration["CLIENT_ID"]!;
+    //     opt.ClientSecret = builder.Configuration["CLIENT_SECRET"]!;
+    // });
 builder.Services.AddScoped<IValidator<CreateExpenseViewModel>, CreateExpenseViewModelValidator>();
 builder.Services.AddControllersWithViews();
 builder.Services.AddOutputCache(options => {
@@ -78,13 +71,6 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 });
 
 var app = builder.Build();
-
-app.Use((context, next) =>
-{
-    context.Request.Host = new HostString("fruglapp.prodigeenet.com");
-    context.Request.Scheme = "https";
-    return next();
-});
 
 // Configure the HTTP request pipeline.
 app.UseForwardedHeaders();
