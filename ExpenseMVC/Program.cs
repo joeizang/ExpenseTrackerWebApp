@@ -5,6 +5,7 @@ using ExpenseMVC.Models;
 using dotenv.net;
 using ExpenseMVC;
 using ExpenseMVC.BusinessLogicServices;
+using ExpenseMVC.BusinessLogicServices.BudgetListServiceLogic;
 using ExpenseMVC.Validators;
 using ExpenseMVC.ViewModels.ExpenseVM;
 using FluentValidation;
@@ -39,10 +40,14 @@ builder.Services.AddDataProtection()
     .PersistKeysToDbContext<DataProtectionContext>();
 builder.Services.AddTransient<IAppEmailSender, EmailService>();
 
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<IUserService, UserService>();
+
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddSingleton(typeof(ThemeService));
 
 builder.Services.AddScoped<IExpenseDataService, ExpenseDataService>();
+builder.Services.AddScoped<IBudgetListDataService, BudgetListDataService>();
 
 builder.Services.AddDefaultIdentity<ApplicationUser>(options => 
         options.SignIn.RequireConfirmedAccount = true)
@@ -54,12 +59,12 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.SignIn.RequireConfirmedEmail = true;
 });
 
-builder.Services.AddAuthentication();
-    //
-    // .AddGoogle(opt => {
-    //     opt.ClientId = builder.Configuration["CLIENT_ID"]!;
-    //     opt.ClientSecret = builder.Configuration["CLIENT_SECRET"]!;
-    // });
+// builder.Services.AddAuthentication()
+//     
+//     .AddGoogle(opt => {
+//         opt.ClientId = builder.Configuration["CLIENT_ID"]!;
+//         opt.ClientSecret = builder.Configuration["CLIENT_SECRET"]!;
+//     });
 builder.Services.AddScoped<IValidator<CreateExpenseViewModel>, CreateExpenseViewModelValidator>();
 builder.Services.AddControllersWithViews();
 builder.Services.AddOutputCache(options => {
@@ -85,6 +90,8 @@ else
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+
+app.MapFallbackToFile("index.html");
 
 
 app.UseHttpsRedirection();

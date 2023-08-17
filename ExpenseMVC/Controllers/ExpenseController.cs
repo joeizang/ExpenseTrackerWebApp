@@ -19,24 +19,21 @@ namespace ExpenseMVC.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly IValidator<CreateExpenseViewModel> _createValidator;
-        private readonly UserManager<ApplicationUser> _userManager;
+        // private readonly UserManager<ApplicationUser> _userManager;
         private readonly IExpenseDataService _expenseDataService;
+        private readonly IUserService _userService;
 
         public ExpenseController(ApplicationDbContext context,
             IValidator<CreateExpenseViewModel> createValidator,
-            UserManager<ApplicationUser> userManager,
-            IExpenseDataService expenseDataService)
+            // UserManager<ApplicationUser> userManager,
+            IExpenseDataService expenseDataService,
+            IUserService userService)
         {
             _context = context;
             _createValidator = createValidator;
-            _userManager = userManager;
+            // _userManager = userManager;
             _expenseDataService = expenseDataService;
-        }
-
-        private async Task<ApplicationUser> GetLoggedInUser()
-        {
-            var currentlyLoggedInUser = await _userManager.FindByEmailAsync(User!.Identity!.Name!);
-            return currentlyLoggedInUser!;
+            _userService = userService;
         }
 
         private ExpenseController() { }
@@ -47,7 +44,7 @@ namespace ExpenseMVC.Controllers
         {
             PagedResult<ExpenseIndexViewModel> expenses = default!;
             var skipValue = (model.PageNumber - 1) * model.PageSize;
-            var currentlyLoggedInUser = await GetLoggedInUser();
+            var currentlyLoggedInUser = await _userService.GetLoggedInUser().ConfigureAwait(false);
             if (model.CurrentFilter == FilterCriteria.ByDate)
                 expenses = await _expenseDataService.GetUserExpenses(currentlyLoggedInUser.Id).ConfigureAwait(false);
             if (model.CurrentFilter == FilterCriteria.ByExpenseType)
@@ -75,22 +72,24 @@ namespace ExpenseMVC.Controllers
         public async Task<IActionResult> Create(CreateExpenseViewModel expense)
         {
             var validationResult = await _createValidator.ValidateAsync(expense);
-            var expenseEntity = new Expense();
-            var currentlyLoggedInUser = await GetLoggedInUser();
+            var currentlyLoggedInUser = await _userService.GetLoggedInUser().ConfigureAwait(false);
 
             if (validationResult.IsValid)
             {
                 Debug.WriteLine("Validation passed");
-                expenseEntity.ExpenseDate = expense.ExpenseDate;
-                expenseEntity.Name = expense.ExpenseName;
-                expenseEntity.Description = expense.ExpenseDescription;
-                expenseEntity.Amount = expense.ExpenseAmount;
-                expenseEntity.CurrencyUsed = expense.ExpenseCurrencyUsed;
-                expenseEntity.Notes = expense.ExpenseNotes;
-                expenseEntity.ExpenseType = expense.ExpenseType;
-                expenseEntity.CreatedAt = DateTimeOffset.UtcNow;
-                expenseEntity.UpdatedAt = DateTimeOffset.UtcNow;
-                expenseEntity.ExpenseOwnerId = currentlyLoggedInUser.Id;
+                var expenseEntity = new Expense
+                {
+                    ExpenseDate = expense.ExpenseDate,
+                    Name = expense.ExpenseName,
+                    Description = expense.ExpenseDescription,
+                    Amount = expense.ExpenseAmount,
+                    CurrencyUsed = expense.ExpenseCurrencyUsed,
+                    Notes = expense.ExpenseNotes,
+                    ExpenseType = expense.ExpenseType,
+                    CreatedAt = DateTimeOffset.UtcNow,
+                    UpdatedAt = DateTimeOffset.UtcNow,
+                    ExpenseOwnerId = currentlyLoggedInUser.Id
+                };
 
                 _context.Add(expenseEntity);
                 await _context.SaveChangesAsync();
@@ -136,7 +135,7 @@ namespace ExpenseMVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid id, ExpenseUpdateViewModel expense)
         {
-            var user = await _userManager.FindByEmailAsync(expense.ExpenseOwnerEmail);
+            var user = await _userService.UserManager.FindByEmailAsync(expense.ExpenseOwnerEmail);
             if (id != expense.ExpenseId)
             {
                 return NotFound();

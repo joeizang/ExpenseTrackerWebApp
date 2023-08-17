@@ -1,0 +1,80 @@
+@model IEnumerable<ExpenseMVC.ViewModels.BudgetListVM.BudgetListViewModel>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row flex-column d-flex col-sm-10 col-md-12 justify-content-center align-items-center mx-auto">
+    <section class="">
+        @* @foreach (var list in Model) *@
+        @* { *@
+        @*     <div class="card shadow rounded" *@
+        @*          hx-get="@($"/budgetlist/{list.ListId}")" *@
+        @*          hx-trigger="click" *@
+        @*          hx-target="#modalbody" *@
+        @*          data-bs-toggle="modal" *@
+        @*          data-bs-target="budgetListModel" *@
+        @*     > *@
+        @*         <div class="card-body"> *@
+        @*             <span class="badge rounded-pill badge-primary">@list.Name</span> *@
+        @*             <span class="badge rounded-pill">This Budget has @list.Items.Count() item in it.</span> *@
+        @*             <span class="">List Total is: @list.Items.Sum(x => x.Price)</span> *@
+        @*         </div> *@
+        @*     </div> *@
+        @* } *@
+        <div class="card shadow rounded mb-2 mt-5"
+           hx-get="@Url.Action("ListDetails", "BudgetList", new { id = 1 })"
+           hx-trigger="click"
+           hx-target="#modalbody"
+        >
+            <div class="card-body">
+                <span class="badge rounded-pill badge-primary bg-info">Budget List Name</span>
+                <span class="badge rounded-pill badge-primary bg-info">This Budget has 37 item in it.</span>
+                <div class="">List Total is: =N= 245,000.00</div>
+            </div>
+        </div>
+        <a class="card shadow rounded mb-2"
+             hx-get="@($"/budgetlist/listdetails/1")"
+             hx-trigger="click"
+             hx-target="#modalbody"
+        >
+            <div class="card-body">
+                <span class="badge rounded-pill bg-info badge-primary">Budget List Name</span>
+                <span class="badge rounded-pill bg-info">This Budget has 37 item in it.</span>
+                <div class="">List Total is: =N= 245,000.00</div>
+            </div>
+        </a>
+        <a class="card shadow rounded mb-2"
+             hx-get="@($"/budgetlist/1")"
+             hx-trigger="click"
+             hx-target="#modalbody"
+        >
+            <div class="card-body">
+                <span class="badge rounded-pill bg-info badge-primary">Budget List Name</span>
+                <span class="badge rounded-pill bg-info">This Budget has 37 item in it.</span>
+                <div class="">List Total is: =N= 245,000.00</div>
+            </div>
+        </a>
+        <a class="card shadow rounded mb-2"
+             hx-get="@($"/budgetlist/1")"
+             hx-trigger="click"
+             hx-target="#modalbody"
+        >
+            <div class="card-body">
+                <span class="badge rounded-pill bg-info badge-primary">Budget List Name</span>
+                <span class="badge rounded-pill bg-info">This Budget has 37 item in it.</span>
+                <div class="">List Total is: =N= 245,000.00</div>
+            </div>
+        </a>
+        <div id="modalbody" class="rounded-2 mx-auto h-auto border-5 border-danger w-75">
+            
+        </div>
+    </section>
+    
+    <section></section>
+    <section></section>
+</div>
+
+
+

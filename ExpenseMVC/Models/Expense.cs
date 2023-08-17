@@ -2,28 +2,25 @@ namespace ExpenseMVC.Models;
 
 public class Expense : BaseEntity
 {
-    public string Name { get; set; } = string.Empty;
-    public DateTimeOffset ExpenseDate { get; set; }
+    public required string Name { get; set; }
+    public DateTimeOffset ExpenseDate { get; set; } = DateTimeOffset.Now;
 
     public string Description { get; set; } = string.Empty;
     
     public decimal Amount { get; set; }
 
-    public Currency CurrencyUsed { get; set; }
+    public required Currency CurrencyUsed { get; set; }
 
     public string? ReceiptUrl { get; set; } = string.Empty;
     
     public string? Notes { get; set; } = string.Empty;
 
-    public ExpenseType ExpenseType { get; set; }
+    public required ExpenseType ExpenseType { get; set; }
 
-    public ApplicationUser ExpenseOwner { get; set; }
+    public ApplicationUser ExpenseOwner { get; set; } = default!;
     
-    public string ExpenseOwnerId { get; set; } = string.Empty;
-    
-    public Expense()
-    {
-        ExpenseDate = DateTimeOffset.Now;
-    }
+    public required string ExpenseOwnerId { get; set; }
+
+    public List<BudgetList> ExpenseBudget { get; set; } = new();
 
 }

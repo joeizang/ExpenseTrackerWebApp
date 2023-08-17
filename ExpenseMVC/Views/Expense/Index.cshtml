@@ -23,12 +23,24 @@
 <br/>
 <div class="row flex-column d-flex col-sm-10 col-md-12 justify-content-center align-items-center mx-auto">
     <section id="actions" class="mb-3 d-flex p-2 justify-content-between align-items-center">
-        <div><span class="display-5">My Expenses</span></div>
-        <div></div>
+        <div><span class="h6 fw-bolder fs-5 text-primary text-outline">My Expenses</span></div>
+        <div>
+            <a class="rounded-circle btn btn-dark justify-content-center align-items-center d-flex" 
+               style="width: 40px; height: 40px;"
+               asp-controller="BudgetList"
+               asp-action="Create"
+               id="budgetListCreateButton"
+            >
+                <i class="bi bi-list-check fw-700 fs-3"></i>
+            </a>
+        </div>
         <div>
             <a asp-action="Create" class="rounded-circle p-0 btn btn-dark justify-content-center align-items-center d-flex" style="width: 40px; height: 40px;">
                 <i class="bi bi-plus-lg fw-700 fs-3" ></i>
             </a>
+        </div>
+        <div id="modalContainer">
+            
         </div>
     </section>
     
@@ -166,6 +178,7 @@
     </section>
 </div>
 
+
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
     <script>
@@ -182,6 +195,6 @@
                     }
                 })
             });
-        });        
+        });
     </script>
 }

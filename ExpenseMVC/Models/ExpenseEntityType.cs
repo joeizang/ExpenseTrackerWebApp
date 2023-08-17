@@ -32,7 +32,8 @@ namespace ExpenseMVC.Models
                 typeof(decimal),
                 propertyInfo: typeof(Expense).GetProperty("Amount", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 fieldInfo: typeof(Expense).GetField("<Amount>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                precision: 2);
+                precision: 18,
+                scale: 2);
 
             var createdAt = runtimeEntityType.AddProperty(
                 "CreatedAt",

@@ -34,6 +34,18 @@ public class ExpenseDataService : IExpenseDataService
                 (int)Math.Ceiling(TotalExpenses / (double)7), 7, pageNumber < (int)Math.Ceiling(TotalExpenses / (double)7), pageNumber > 1);
     }
 
+    public async Task<CursorPagedResult<List<ExpenseIndexViewModel>>> GetUserExpensesCursorPaged(string userId,
+        DateTimeOffset cursor)
+    {
+        var expenses = new List<ExpenseIndexViewModel>();
+        await foreach (var each in CompiledLinqQueries.GetUserExpensesCursorPagedAsync(_context, userId, cursor))
+        {
+            expenses.Add(each);
+        }
+
+        return new CursorPagedResult<List<ExpenseIndexViewModel>>(expenses[^1].ExpenseDate, expenses);
+    }
+
     public async Task<PagedResult<ExpenseIndexViewModel>> GetExpenseTypeFilteredExpenses(string userId, int pageNumber)
     {
         var expenses = new List<ExpenseIndexViewModel>();

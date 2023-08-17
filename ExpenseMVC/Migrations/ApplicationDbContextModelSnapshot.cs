@@ -90,6 +90,82 @@ namespace ExpenseMVC.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("ExpenseMVC.Models.BudgetList", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<Guid>("ExpenseEntityId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("ExpenseId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("ListName")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ExpenseEntityId");
+
+                    b.HasIndex("ExpenseId");
+
+                    b.ToTable("BudgetLists");
+                });
+
+            modelBuilder.Entity("ExpenseMVC.Models.BudgetListItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid?>("BudgetListId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<decimal>("Price")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<double>("Quantity")
+                        .HasColumnType("double");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BudgetListId");
+
+                    b.ToTable("BudgetListItem");
+                });
+
             modelBuilder.Entity("ExpenseMVC.Models.Expense", b =>
                 {
                     b.Property<Guid>("Id")
@@ -97,8 +173,8 @@ namespace ExpenseMVC.Migrations
                         .HasColumnType("char(36)");
 
                     b.Property<decimal>("Amount")
-                        .HasPrecision(2)
-                        .HasColumnType("decimal(2,2)");
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetime(6)");
@@ -147,8 +223,8 @@ namespace ExpenseMVC.Migrations
                         .HasColumnType("char(36)");
 
                     b.Property<decimal>("Amount")
-                        .HasPrecision(2)
-                        .HasColumnType("decimal(2,2)");
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetime(6)");
@@ -305,6 +381,28 @@ namespace ExpenseMVC.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("ExpenseMVC.Models.BudgetList", b =>
+                {
+                    b.HasOne("ExpenseMVC.Models.Expense", null)
+                        .WithMany("ExpenseBudget")
+                        .HasForeignKey("ExpenseEntityId");
+
+                    b.HasOne("ExpenseMVC.Models.Expense", "Expense")
+                        .WithMany()
+                        .HasForeignKey("ExpenseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Expense");
+                });
+
+            modelBuilder.Entity("ExpenseMVC.Models.BudgetListItem", b =>
+                {
+                    b.HasOne("ExpenseMVC.Models.BudgetList", null)
+                        .WithMany("BudgetItems")
+                        .HasForeignKey("BudgetListId");
+                });
+
             modelBuilder.Entity("ExpenseMVC.Models.Expense", b =>
                 {
                     b.HasOne("ExpenseMVC.Models.ApplicationUser", "ExpenseOwner")
@@ -383,6 +481,16 @@ namespace ExpenseMVC.Migrations
                     b.Navigation("Expenses");
 
                     b.Navigation("Incomes");
+                });
+
+            modelBuilder.Entity("ExpenseMVC.Models.BudgetList", b =>
+                {
+                    b.Navigation("BudgetItems");
+                });
+
+            modelBuilder.Entity("ExpenseMVC.Models.Expense", b =>
+                {
+                    b.Navigation("ExpenseBudget");
                 });
 #pragma warning restore 612, 618
         }

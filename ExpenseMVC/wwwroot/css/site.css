@@ -25,3 +25,11 @@
         background: url("../img/wave-materia-desktop.svg") no-repeat center;
     }
 }
+
+.text-outline {
+    text-shadow:
+            -1px -1px 0 rgba(222, 201, 126, 0.55),
+            1px -1px 0 rgba(222, 201, 126, 0.55),
+            -1px 1px 0 rgba(222, 201, 126, 0.55),
+            1px 1px 0 rgba(222, 201, 126, 0.55);
+}

@@ -13,6 +13,8 @@ namespace ExpenseMVC.Models
         partial void Initialize()
         {
             var applicationUser = ApplicationUserEntityType.Create(this);
+            var budgetList = BudgetListEntityType.Create(this);
+            var budgetListItem = BudgetListItemEntityType.Create(this);
             var expense = ExpenseEntityType.Create(this);
             var income = IncomeEntityType.Create(this);
             var identityRole = IdentityRoleEntityType.Create(this);
@@ -22,6 +24,9 @@ namespace ExpenseMVC.Models
             var identityUserRole = IdentityUserRoleEntityType.Create(this);
             var identityUserToken = IdentityUserTokenEntityType.Create(this);
 
+            BudgetListEntityType.CreateForeignKey1(budgetList, expense);
+            BudgetListEntityType.CreateForeignKey2(budgetList, expense);
+            BudgetListItemEntityType.CreateForeignKey1(budgetListItem, budgetList);
             ExpenseEntityType.CreateForeignKey1(expense, applicationUser);
             IncomeEntityType.CreateForeignKey1(income, applicationUser);
             IdentityRoleClaimEntityType.CreateForeignKey1(identityRoleClaim, identityRole);
@@ -32,6 +37,8 @@ namespace ExpenseMVC.Models
             IdentityUserTokenEntityType.CreateForeignKey1(identityUserToken, applicationUser);
 
             ApplicationUserEntityType.CreateAnnotations(applicationUser);
+            BudgetListEntityType.CreateAnnotations(budgetList);
+            BudgetListItemEntityType.CreateAnnotations(budgetListItem);
             ExpenseEntityType.CreateAnnotations(expense);
             IncomeEntityType.CreateAnnotations(income);
             IdentityRoleEntityType.CreateAnnotations(identityRole);

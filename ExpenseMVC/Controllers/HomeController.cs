@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.OutputCaching;
 
 namespace ExpenseMVC.Controllers;
 
-[Authorize]
+// [Authorize]
 public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
@@ -29,20 +29,20 @@ public class HomeController : Controller
         _themeService = themeService;
     }
 
-    private async Task<string> GetUser()
-    {
-        var result = await _userManager.FindByEmailAsync(User?.Identity?.Name!);
-        return result.Id;
-    }
+    // private async Task<string> GetUser()
+    // {
+    //     var result = await _userManager.FindByEmailAsync(User?.Identity?.Name!);
+    //     return result.Id;
+    // }
 
     [OutputCache(Duration = 60)]
     public async Task<IActionResult> Index()
     {
-        var userId = await GetUser().ConfigureAwait(false);
-        ViewBag.DayAverage = 3;
-        ViewBag.Total = _service.GetExpenseTotalForLastMonth(userId);
-        ViewBag.MeanTotalOver55Days = (await _service.GetMeanSpendByDays(userId, 7).ConfigureAwait(false))
-            .ToString("F2");
+        // var userId = await GetUser().ConfigureAwait(false);
+        // ViewBag.DayAverage = 3;
+        // ViewBag.Total = _service.GetExpenseTotalForLastMonth(userId);
+        // ViewBag.MeanTotalOver55Days = (await _service.GetMeanSpendByDays(userId, 7).ConfigureAwait(false))
+        //     .ToString("F2");
         return View();
     }
 }
